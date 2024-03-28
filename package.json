@@ -11,6 +11,10 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fuel-wallet/sdk": "^0.16.1",
+    "@fuels/connectors": "^0.1.1",
+    "@fuels/react": "^0.18.0",
+    "@tanstack/react-query": "^5.28.9",
     "fuels": "0.78.0",
     "next": "14.0.1",
     "react": "^18.2",

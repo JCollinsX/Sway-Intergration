@@ -1,40 +1,39 @@
 import type { TestContractAbi } from "@/sway-api";
 import { TestContractAbi__factory } from "@/sway-api";
-import contractIds from "@/sway-api/contract-ids.json";
 import { FuelLogo } from "@/components/FuelLogo";
-import { bn } from "fuels";
-import { useContext, useEffect, useState } from "react";
+import { bn, Wallet } from "fuels";
+import { useEffect, useState } from "react";
 import { Link } from "@/components/Link";
 import { Button } from "@/components/Button";
-import { AppContext } from "@/components/Layout";
 import toast from "react-hot-toast";
+import { useProvider, useWallet } from "@fuels/react";
 
-const contractId = contractIds.testContract;
+const contractId = "0x85958801564e5e65d64999da76e8922ea99ed5911fae74d4994509cb95da7786";
 
 const hasContract = process.env.NEXT_PUBLIC_HAS_CONTRACT === "true";
 const hasPredicate = process.env.NEXT_PUBLIC_HAS_PREDICATE === "true";
 const hasScript = process.env.NEXT_PUBLIC_HAS_SCRIPT === "true";
 
 export default function Home() {
-  const { burnerWallet, burnerWalletBalance } = useContext(AppContext);
+  const { wallet } = useWallet();
+
   const [contract, setContract] = useState<TestContractAbi>();
   const [counter, setCounter] = useState<number>();
 
   useEffect(() => {
     (async () => {
-      if (hasContract && burnerWallet && burnerWalletBalance?.gt(0)) {
-        const testContract = TestContractAbi__factory.connect(
+      if (wallet) {
+        const contract = TestContractAbi__factory.connect(
           contractId,
-          burnerWallet,
+          wallet,
         );
-        setContract(testContract);
-        const { value } = await testContract.functions.get_count().simulate();
+        const { value } = await contract.functions.get_count().get();
         setCounter(value.toNumber());
       }
 
       // eslint-disable-next-line no-console
     })().catch(console.error);
-  }, [burnerWallet, burnerWalletBalance]);
+  }, [wallet]);
 
   // eslint-disable-next-line consistent-return
   const onIncrementPressed = async () => {
@@ -42,14 +41,12 @@ export default function Home() {
       return toast.error("Contract not loaded");
     }
 
-    if (burnerWalletBalance?.eq(0)) {
-      return toast.error(
-        "Your wallet does not have enough funds. Please click the 'Top-up Wallet' button in the top right corner, or use the local faucet.",
-      );
+    try {
+      const {value} = await contract.functions.increment_counter(bn(1)).call();
+      setCounter(value.toNumber());
+    } catch (e) {
+      toast.error(e.message);
     }
-
-    const { value } = await contract.functions.increment_counter(bn(1)).call();
-    setCounter(value.toNumber());
   };
 
   return (
@@ -59,32 +56,15 @@ export default function Home() {
         <h1 className="text-2xl font-semibold ali">Welcome to Fuel</h1>
       </div>
 
-      {hasContract && (
-        <span className="text-gray-400">
-          Get started by editing <i>sway-programs/contract/main.sw</i> or{" "}
-          <i>src/pages/index.tsx</i>.
-        </span>
-      )}
+      <>
+        <h3 className="text-xl font-semibold">Counter</h3>
 
-      <span className="text-gray-400">
-        This template uses the new{" "}
-        <Link href="https://fuellabs.github.io/fuels-ts/tooling/cli/fuels/">
-          Fuels CLI
-        </Link>{" "}
-        to enable type-safe hot-reloading for your Sway programs.
-      </span>
+        <span className="text-gray-400 text-6xl">{counter}</span>
 
-      {hasContract && (
-        <>
-          <h3 className="text-xl font-semibold">Counter</h3>
-
-          <span className="text-gray-400 text-6xl">{counter}</span>
-
-          <Button onClick={onIncrementPressed} className="mt-6">
-            Increment Counter
-          </Button>
-        </>
-      )}
+        <Button onClick={onIncrementPressed} className="mt-6">
+          Increment Counter
+        </Button>
+      </>
 
       {hasPredicate && (
         <Link href="/predicate" className="mt-4">
