@@ -44,6 +44,7 @@ export default function Home() {
       const {value} = await contract.functions.increment_counter(bn(1)).call();
       setCounter(value.toNumber());
     } catch (e) {
+      // @ts-ignore
       toast.error(e.message);
     }
   };
