@@ -3,7 +3,6 @@ import { FuelLogo } from "@/components/FuelLogo";
 import { Input } from "@/components/Input";
 import { AppContext } from "@/components/Layout";
 import { Link } from "@/components/Link";
-import { TestScriptAbi__factory } from "@/sway-api";
 import { BN, BigNumberish, Script, bn } from "fuels";
 import { useContext, useEffect, useState } from "react";
 import toast from "react-hot-toast";

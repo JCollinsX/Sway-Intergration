@@ -1,12 +1,11 @@
-import type { TestContractAbi } from "@/sway-api";
-import { TestContractAbi__factory } from "@/sway-api";
 import { FuelLogo } from "@/components/FuelLogo";
 import { bn, Wallet } from "fuels";
 import { useEffect, useState } from "react";
 import { Link } from "@/components/Link";
 import { Button } from "@/components/Button";
 import toast from "react-hot-toast";
-import { useProvider, useWallet } from "@fuels/react";
+import { useWallet } from "@fuels/react";
+import { TestContractAbi, TestContractAbi__factory } from "@/contracts";
 
 const contractId = "0x85958801564e5e65d64999da76e8922ea99ed5911fae74d4994509cb95da7786";
 
@@ -65,18 +64,6 @@ export default function Home() {
           Increment Counter
         </Button>
       </>
-
-      {hasPredicate && (
-        <Link href="/predicate" className="mt-4">
-          Predicate Example
-        </Link>
-      )}
-
-      {hasScript && (
-        <Link href="/script" className="mt-4">
-          Script Example
-        </Link>
-      )}
 
       <Link href="https://docs.fuel.network" target="_blank" className="mt-12">
         Fuel Docs
