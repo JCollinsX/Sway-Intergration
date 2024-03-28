@@ -9,10 +9,6 @@ import { TestContractAbi, TestContractAbi__factory } from "@/contracts";
 
 const contractId = "0x85958801564e5e65d64999da76e8922ea99ed5911fae74d4994509cb95da7786";
 
-const hasContract = process.env.NEXT_PUBLIC_HAS_CONTRACT === "true";
-const hasPredicate = process.env.NEXT_PUBLIC_HAS_PREDICATE === "true";
-const hasScript = process.env.NEXT_PUBLIC_HAS_SCRIPT === "true";
-
 export default function Home() {
   const { wallet } = useWallet();
 
@@ -26,6 +22,7 @@ export default function Home() {
           contractId,
           wallet,
         );
+        setContract(contract);
         const { value } = await contract.functions.get_count().get();
         setCounter(value.toNumber());
       }

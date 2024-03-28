@@ -1,10 +1,10 @@
-import { BN, Provider, Wallet, WalletUnlocked } from "fuels";
-import { createContext, useCallback, useEffect, useState } from "react";
+import { BN, WalletUnlocked } from "fuels";
+import { createContext, useEffect, useState } from "react";
 import { BurnerWallet } from "./BurnerWallet";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "./Link";
 import { Button } from "./Button";
-import { NODE_URL, truncateAddress } from "@/lib";
+import { truncateAddress } from "@/lib";
 import { useAccount, useConnectUI, useIsConnected, useWallet } from '@fuels/react';
 
 const BURNER_WALLET_LOCAL_STORAGE_KEY = "create-fuels-burner-wallet-pk";
@@ -30,33 +30,6 @@ export const Layout = ({children}: { children: React.ReactNode }) => {
   const [faucetWallet, setFaucetWallet] = useState<WalletUnlocked>();
 
   const [initialTopupDone, setInitialTopupDone] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      // check if burner wallet pk is stored in local storage
-      const burnerWalletPk = localStorage.getItem(
-        BURNER_WALLET_LOCAL_STORAGE_KEY,
-      );
-
-      let wallet: WalletUnlocked;
-
-      if (burnerWalletPk) {
-        const provider = await Provider.create(NODE_URL);
-        wallet = Wallet.fromPrivateKey(burnerWalletPk, provider);
-      } else {
-        // if not, create a new burner wallet
-        const provider = await Provider.create(NODE_URL);
-        wallet = Wallet.generate({provider});
-
-        localStorage.setItem(
-          BURNER_WALLET_LOCAL_STORAGE_KEY,
-          wallet.privateKey,
-        );
-      }
-
-      const burnerWalletBalance = await wallet?.getBalance();
-    })().catch(console.error);
-  }, []);
 
   useEffect(() => {
     if (faucetWallet && !initialTopupDone) {
